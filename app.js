@@ -26,10 +26,30 @@ function addTask() {
 
   tasks.push(task);
   console.log(tasks);
+  renderTask(task);
   // Save Local Storage
   // Render Task
+
   // Count...
   clearInputs();
+}
+
+function renderTask(task) {
+  const taskElement = document.createElement("li");
+
+  // Remove the empty list element if any task.
+  if (tasks.length >= 1) {
+    document.querySelector(".empty-list").remove();
+  }
+  taskElement.classList.add("task-item");
+
+  taskElement.innerHTML = `
+  <span class="task-title">${task.name}</span>
+  <span class="task-description">${task.description}</span>
+  <span>${task.createdAt}</span>
+  `;
+
+  taskList.appendChild(taskElement);
 }
 
 function clearInputs() {
