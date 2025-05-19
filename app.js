@@ -17,5 +17,22 @@ function addTask() {
     return;
   }
 
-  console.log(name, description);
+  const task = {
+    id: Date.now(),
+    name: name,
+    description: description,
+    createdAt: new Date().toISOString(),
+  };
+
+  tasks.push(task);
+  console.log(tasks);
+  // Save Local Storage
+  // Render Task
+  // Count...
+  clearInputs();
+}
+
+function clearInputs() {
+  taskName.value = "";
+  taskDescription.value = "";
 }
