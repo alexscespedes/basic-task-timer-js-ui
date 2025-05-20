@@ -35,23 +35,29 @@ function addTask() {
 }
 
 function renderTask(task) {
-  const taskElement = document.createElement("li");
+  const taskItem = document.createElement("li");
 
   // Remove the empty list element if any task.
   if (tasks.length >= 1) {
     document.querySelector(".empty-list").remove();
   }
-  taskElement.classList.add("task-item");
+  taskItem.classList.add("task-item");
 
-  taskElement.innerHTML = `
+  taskItem.innerHTML = `
   <div class="task-header">
     <span class="task-title">${task.name}</span>
   </div>
   <span class="task-description">${task.description}</span>
   <span>${task.createdAt}</span>
+  <button class="delete-btn">Delete</button>
   `;
 
-  taskList.appendChild(taskElement);
+  taskItem.querySelector(".delete-btn").addEventListener("click", () => {
+    taskItem.remove();
+    // Check if empty list to render again "No added list"
+  });
+
+  taskList.appendChild(taskItem);
 }
 
 function clearInputs() {
