@@ -44,7 +44,9 @@ function renderTask(task) {
   taskElement.classList.add("task-item");
 
   taskElement.innerHTML = `
-  <span class="task-title">${task.name}</span>
+  <div class="task-header">
+    <span class="task-title">${task.name}</span>
+  </div>
   <span class="task-description">${task.description}</span>
   <span>${task.createdAt}</span>
   `;
