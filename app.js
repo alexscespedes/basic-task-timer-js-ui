@@ -4,6 +4,8 @@ const taskName = document.getElementById("taskName");
 const taskDescription = document.getElementById("taskDescription");
 const taskList = document.getElementById("taskList");
 
+const taskItem = document.createElement("li");
+
 let tasks = [];
 
 // Check my code with taskManager.js
@@ -35,12 +37,8 @@ function addTask() {
 }
 
 function renderTask(task) {
-  const taskItem = document.createElement("li");
+  updateEmptyState();
 
-  // Remove the empty list element if any task.
-  if (tasks.length >= 1) {
-    document.querySelector(".empty-list").remove();
-  }
   taskItem.classList.add("task-item");
 
   taskItem.innerHTML = `
@@ -53,11 +51,24 @@ function renderTask(task) {
   `;
 
   taskItem.querySelector(".delete-btn").addEventListener("click", () => {
+    tasks.pop();
     taskItem.remove();
-    // Check if empty list to render again "No added list"
+
+    updateEmptyState();
   });
 
   taskList.appendChild(taskItem);
+}
+
+function updateEmptyState() {
+  if (tasks.length === 0) {
+    const emptyMessage = document.createElement("li");
+    emptyMessage.className = "empty-list";
+    emptyMessage.textContent = "No tasks added yet";
+    taskList.appendChild(emptyMessage);
+  } else {
+    document.querySelector(".empty-list").remove();
+  }
 }
 
 function clearInputs() {
