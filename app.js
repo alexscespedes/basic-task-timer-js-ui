@@ -4,8 +4,6 @@ const taskName = document.getElementById("taskName");
 const taskDescription = document.getElementById("taskDescription");
 const taskList = document.getElementById("taskList");
 
-const taskItem = document.createElement("li");
-
 let tasks = [];
 
 // Check my code with taskManager.js
@@ -37,9 +35,12 @@ function addTask() {
 }
 
 function renderTask(task) {
+  const taskItem = document.createElement("li");
+
   updateEmptyState();
 
   taskItem.classList.add("task-item");
+  taskItem.dataset.id = task.id;
 
   taskItem.innerHTML = `
   <div class="task-header">
@@ -47,17 +48,26 @@ function renderTask(task) {
   </div>
   <span class="task-description">${task.description}</span>
   <span>${task.createdAt}</span>
-  <button class="delete-btn">Delete</button>
+  <button onclick="deleteTask(this)" class="delete-btn">Delete</button>
   `;
 
-  taskItem.querySelector(".delete-btn").addEventListener("click", () => {
-    tasks.pop();
-    taskItem.remove();
-
-    updateEmptyState();
-  });
-
   taskList.appendChild(taskItem);
+}
+
+function deleteTask(button) {
+  // ul --> li --> button
+  const taskElement = button.parentElement;
+  const taskId = parseInt(taskElement.dataset.id);
+
+  // Remove from tasks array
+  const index = tasks.findIndex((task) => task.id === taskId);
+
+  if (index !== -1) {
+    tasks.splice(index, 1);
+  }
+
+  taskElement.remove();
+  updateEmptyState();
 }
 
 function updateEmptyState() {
