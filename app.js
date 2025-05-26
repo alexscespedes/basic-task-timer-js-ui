@@ -52,6 +52,7 @@ function renderTask(task) {
   `;
 
   taskList.appendChild(taskItem);
+  taskTimer();
 }
 
 function deleteTask(button) {
@@ -78,10 +79,40 @@ function updateEmptyState() {
     taskList.appendChild(emptyMessage);
   } else {
     document.querySelector(".empty-list").remove();
+    // Consider add the task timer remove here when there is not tasks
   }
 }
 
 function clearInputs() {
   taskName.value = "";
   taskDescription.value = "";
+}
+
+function taskTimer() {
+  const taskTimer = document.createElement("p");
+  taskTimer.className = "task-timer";
+  // taskTimer.textContent = "testing";
+
+  var x = setInterval(function () {
+    var now = new Date().getDate();
+    var countUpTimer = new Date("Mar 8, 2025 00:00:00").getTime();
+
+    var distance = countUpTimer - now;
+
+    // var days = Math.floor(distance / (1000 * 60 * 60 * 24))
+    var hours = Math.floor(
+      (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    );
+    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    taskTimer.innerHTML = hours + "h " + minutes + "m " + seconds + "s";
+
+    if (distance < 0) {
+      clearInterval(x);
+      taskTimer.innerHTML = "Unavailable";
+    }
+  }, 1000);
+
+  taskList.appendChild(taskTimer);
 }
