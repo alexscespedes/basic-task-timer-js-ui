@@ -21,7 +21,10 @@ function addTask() {
     id: Date.now(),
     name: name,
     description: description,
-    createdAt: new Date().toISOString(),
+    // elapsedTime: 0,
+    // isRunning: true,
+    // intervalId: null,
+    // createdAt: new Date().toISOString(),
   };
 
   tasks.push(task);
@@ -47,7 +50,6 @@ function renderTask(task) {
     <span class="task-title">${task.name}</span>
   </div>
   <span class="task-description">${task.description}</span>
-  <span>${task.createdAt}</span>
   <button onclick="deleteTask(this)" class="delete-btn">Delete</button>
   `;
 
@@ -89,30 +91,25 @@ function clearInputs() {
 }
 
 function taskTimer() {
+  let elapsedSeconds = 0;
+
   const taskTimer = document.createElement("p");
   taskTimer.className = "task-timer";
-  // taskTimer.textContent = "testing";
 
   var x = setInterval(function () {
-    var now = new Date().getDate();
-    var countUpTimer = new Date("Mar 8, 2025 00:00:00").getTime();
+    elapsedSeconds++;
 
-    var distance = countUpTimer - now;
+    const hours = Math.floor(elapsedSeconds / 3600);
+    elapsedSeconds %= 3600;
+    const minutes = Math.floor(elapsedSeconds / 60);
+    const seconds = elapsedSeconds % 60;
 
-    // var days = Math.floor(distance / (1000 * 60 * 60 * 24))
-    var hours = Math.floor(
-      (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-    );
-    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    const formattedTime = `${String(hours).padStart(2, "0")} : ${String(
+      minutes
+    ).padStart(2, "0")} : ${String(seconds).padStart(2, "0")}`;
+    console.log(formattedTime);
 
-    taskTimer.innerHTML = hours + "h " + minutes + "m " + seconds + "s";
-
-    if (distance < 0) {
-      clearInterval(x);
-      taskTimer.innerHTML = "Unavailable";
-    }
+    taskTimer.innerHTML = formattedTime;
   }, 1000);
-
   taskList.appendChild(taskTimer);
 }
