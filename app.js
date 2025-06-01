@@ -21,10 +21,10 @@ function addTask() {
     id: Date.now(),
     name: name,
     description: description,
-    // elapsedTime: 0,
-    // isRunning: true,
-    // intervalId: null,
-    // createdAt: new Date().toISOString(),
+    elapsedTime: 0,
+    isRunning: true,
+    intervalId: null,
+    createdAt: new Date().toISOString(),
   };
 
   tasks.push(task);
@@ -51,10 +51,21 @@ function renderTask(task) {
   </div>
   <span class="task-description">${task.description}</span>
   <button onclick="deleteTask(this)" class="delete-btn">Delete</button>
+  <div class="task-controls">
+    <button onclick="startTimer()" class="start-btn">Start</button>
+    <button onclick="pauseTimer()" class="pause-btn">Pause</button>
+    <button onclick="resetTimer()" class="reset-btn">Reset</button>
+  </div>
   `;
-
   taskList.appendChild(taskItem);
-  taskTimer();
+
+  const taskTimer = document.createElement("p");
+  taskTimer.className = "task-timer";
+
+  taskTimer.innerHTML = "00:00:00";
+  // taskTimer();
+
+  taskList.appendChild(taskTimer);
 }
 
 function deleteTask(button) {
@@ -93,9 +104,11 @@ function clearInputs() {
 function taskTimer() {
   let elapsedSeconds = 0;
 
-  const taskTimer = document.createElement("p");
-  taskTimer.className = "task-timer";
+  const startBtn = taskItem.querySelector(".start-btn");
+  const pauseBtn = taskItem.querySelector(".pause-btn");
+  const resetBtn = taskItem.querySelector(".reset-btn");
 
+  // function startTimer() {
   var x = setInterval(function () {
     elapsedSeconds++;
 
@@ -111,5 +124,9 @@ function taskTimer() {
 
     taskTimer.innerHTML = formattedTime;
   }, 1000);
-  taskList.appendChild(taskTimer);
+  // }
+}
+
+function resetTimer(x) {
+  clearInterval(x);
 }
