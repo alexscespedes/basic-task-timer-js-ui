@@ -22,7 +22,7 @@ function addTask() {
     name: name,
     description: description,
     elapsedTime: 0,
-    isRunning: true,
+    isRunning: false,
     intervalId: null,
     createdAt: new Date().toISOString(),
   };
@@ -44,28 +44,52 @@ function renderTask(task) {
 
   taskItem.classList.add("task-item");
   taskItem.dataset.id = task.id;
+  // taskItem.dataset.isRunning = task.isRunning;
 
   taskItem.innerHTML = `
   <div class="task-header">
     <span class="task-title">${task.name}</span>
   </div>
   <span class="task-description">${task.description}</span>
-  <button onclick="deleteTask(this)" class="delete-btn">Delete</button>
+  <p class="task-timer">00:00:00</p>
   <div class="task-controls">
-    <button onclick="startTimer()" class="start-btn">Start</button>
+    <button onclick="startTimer(this)" class="start-btn">Start</button>
     <button onclick="pauseTimer()" class="pause-btn">Pause</button>
     <button onclick="resetTimer()" class="reset-btn">Reset</button>
   </div>
+  <button onclick="deleteTask(this)" class="delete-btn">Delete</button>
   `;
+
   taskList.appendChild(taskItem);
+}
 
-  const taskTimer = document.createElement("p");
-  taskTimer.className = "task-timer";
+function startTimer(button) {
+  const taskElement = button.parentElement.parentElement;
+  const taskId = parseInt(taskElement.dataset.id);
+  // const running = taskElement.dataset.isRunning;
 
-  taskTimer.innerHTML = "00:00:00";
-  // taskTimer();
+  const task = tasks.find((task) => task.id === taskId);
 
-  taskList.appendChild(taskTimer);
+  const timerDisplay = taskElement.querySelector(".task-timer");
+
+  if (!task.isRunning) {
+    elapsedSeconds = task.elapsedTime;
+    setInterval(function () {
+      elapsedSeconds++;
+
+      const hours = Math.floor(elapsedSeconds / 3600);
+      elapsedSeconds %= 3600;
+      const minutes = Math.floor(elapsedSeconds / 60);
+      const seconds = elapsedSeconds % 60;
+
+      const formattedTime = `${String(hours).padStart(2, "0")} : ${String(
+        minutes
+      ).padStart(2, "0")} : ${String(seconds).padStart(2, "0")}`;
+      console.log(formattedTime);
+
+      timerDisplay.innerHTML = formattedTime;
+    }, 1000);
+  }
 }
 
 function deleteTask(button) {
@@ -109,7 +133,7 @@ function taskTimer() {
   const resetBtn = taskItem.querySelector(".reset-btn");
 
   // function startTimer() {
-  var x = setInterval(function () {
+  setInterval(function () {
     elapsedSeconds++;
 
     const hours = Math.floor(elapsedSeconds / 3600);
