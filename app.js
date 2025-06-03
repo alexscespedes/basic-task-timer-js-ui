@@ -55,7 +55,7 @@ function renderTask(task) {
   <div class="task-controls">
     <button onclick="startTimer(this)" class="start-btn">Start</button>
     <button onclick="pauseTimer()" class="pause-btn">Pause</button>
-    <button onclick="resetTimer()" class="reset-btn">Reset</button>
+    <button onclick="resetTimer(this)" class="reset-btn">Reset</button>
   </div>
   <button onclick="deleteTask(this)" class="delete-btn">Delete</button>
   `;
@@ -88,7 +88,6 @@ function startTimer(button) {
       const formattedTime = `${String(hours).padStart(2, "0")} : ${String(
         minutes
       ).padStart(2, "0")} : ${String(seconds).padStart(2, "0")}`;
-      console.log(formattedTime);
 
       timerDisplay.innerHTML = formattedTime;
     }, 1000);
@@ -97,6 +96,18 @@ function startTimer(button) {
   } else {
     alert("The task timer is already running");
   }
+}
+
+function resetTimer(button) {
+  const taskElement = button.parentElement.parentElement;
+  const taskId = parseInt(taskElement.dataset.id);
+  // const running = taskElement.dataset.isRunning;
+
+  const task = tasks.find((task) => task.id === taskId);
+  clearInterval(task.intervalId);
+  document.querySelector(".task-timer").innerHTML = "00:00:00";
+  task.isRunning = false;
+  task.elapsedTime = 0;
 }
 
 function deleteTask(button) {
