@@ -73,14 +73,17 @@ function startTimer(button) {
   const timerDisplay = taskElement.querySelector(".task-timer");
 
   if (!task.isRunning) {
-    elapsedSeconds = task.elapsedTime;
-    setInterval(function () {
+    task.isRunning = true;
+    let elapsedSeconds = task.elapsedTime;
+
+    const intervalId = setInterval(function () {
       elapsedSeconds++;
+      task.elapsedTime = elapsedSeconds;
 
       const hours = Math.floor(elapsedSeconds / 3600);
-      elapsedSeconds %= 3600;
-      const minutes = Math.floor(elapsedSeconds / 60);
-      const seconds = elapsedSeconds % 60;
+      remainingAfterHours = elapsedSeconds % 3600; // Making a copy for not modifying elapsedSeconds.
+      const minutes = Math.floor(remainingAfterHours / 60);
+      const seconds = remainingAfterHours % 60;
 
       const formattedTime = `${String(hours).padStart(2, "0")} : ${String(
         minutes
@@ -89,6 +92,10 @@ function startTimer(button) {
 
       timerDisplay.innerHTML = formattedTime;
     }, 1000);
+
+    task.intervalId = intervalId;
+  } else {
+    alert("The task timer is already running");
   }
 }
 
@@ -123,34 +130,4 @@ function updateEmptyState() {
 function clearInputs() {
   taskName.value = "";
   taskDescription.value = "";
-}
-
-function taskTimer() {
-  let elapsedSeconds = 0;
-
-  const startBtn = taskItem.querySelector(".start-btn");
-  const pauseBtn = taskItem.querySelector(".pause-btn");
-  const resetBtn = taskItem.querySelector(".reset-btn");
-
-  // function startTimer() {
-  setInterval(function () {
-    elapsedSeconds++;
-
-    const hours = Math.floor(elapsedSeconds / 3600);
-    elapsedSeconds %= 3600;
-    const minutes = Math.floor(elapsedSeconds / 60);
-    const seconds = elapsedSeconds % 60;
-
-    const formattedTime = `${String(hours).padStart(2, "0")} : ${String(
-      minutes
-    ).padStart(2, "0")} : ${String(seconds).padStart(2, "0")}`;
-    console.log(formattedTime);
-
-    taskTimer.innerHTML = formattedTime;
-  }, 1000);
-  // }
-}
-
-function resetTimer(x) {
-  clearInterval(x);
 }
