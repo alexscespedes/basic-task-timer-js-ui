@@ -138,14 +138,18 @@ function deleteTask(button) {
 }
 
 function updateEmptyState() {
+  const existingEmpty = document.querySelector(".empty-list");
   if (tasks.length === 0) {
-    const emptyMessage = document.createElement("li");
-    emptyMessage.className = "empty-list";
-    emptyMessage.textContent = "No tasks added yet";
-    taskList.appendChild(emptyMessage);
+    if (!existingEmpty) {
+      const emptyMessage = document.createElement("li");
+      emptyMessage.className = "empty-list";
+      emptyMessage.textContent = "No tasks added yet";
+      taskList.appendChild(emptyMessage);
+    }
   } else {
-    document.querySelector(".empty-list").remove();
-    // Consider add the task timer remove here when there is not tasks
+    if (existingEmpty) {
+      document.querySelector(".empty-list").remove();
+    }
   }
 }
 
