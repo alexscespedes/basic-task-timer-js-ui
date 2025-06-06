@@ -6,7 +6,7 @@ const taskList = document.getElementById("taskList");
 
 let tasks = [];
 
-// Check my code with taskManager.js
+window.addEventListener("DOMContentLoaded", loadFromLocalStorage);
 
 function addTask() {
   const name = taskName.value.trim();
@@ -28,9 +28,8 @@ function addTask() {
   };
 
   tasks.push(task);
-  console.log(tasks);
   renderTask(task);
-  // Save Local Storage
+  saveToLocalStorage();
   // Render Task
 
   // Count...
@@ -44,7 +43,6 @@ function renderTask(task) {
 
   taskItem.classList.add("task-item");
   taskItem.dataset.id = task.id;
-  // taskItem.dataset.isRunning = task.isRunning;
 
   taskItem.innerHTML = `
   <div class="task-header">
@@ -92,6 +90,7 @@ function startTimer(button) {
     }, 1000);
 
     task.intervalId = intervalId;
+    saveToLocalStorage();
   } else {
     alert("The task timer is already running");
   }
@@ -105,6 +104,7 @@ function pauseTimer(button) {
   if (task.isRunning) {
     clearInterval(task.intervalId);
     task.isRunning = false;
+    saveToLocalStorage();
   } else {
     alert("The task timer is already paused");
   }
@@ -119,6 +119,7 @@ function resetTimer(button) {
   document.querySelector(".task-timer").innerHTML = "00:00:00";
   task.isRunning = false;
   task.elapsedTime = 0;
+  saveToLocalStorage();
 }
 
 function deleteTask(button) {
@@ -135,6 +136,7 @@ function deleteTask(button) {
 
   taskElement.remove();
   updateEmptyState();
+  saveToLocalStorage();
 }
 
 function updateEmptyState() {
@@ -156,4 +158,17 @@ function updateEmptyState() {
 function clearInputs() {
   taskName.value = "";
   taskDescription.value = "";
+}
+
+function saveToLocalStorage() {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+function loadFromLocalStorage() {
+  const storedTasks = localStorage.getItem("tasks");
+  if (storedTasks) {
+    tasks = JSON.parse(storedTasks);
+    tasks.forEach((task) => renderTask(task));
+    updateEmptyState();
+  }
 }
