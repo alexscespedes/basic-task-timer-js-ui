@@ -113,10 +113,14 @@ function pauseTimer(button) {
 function resetTimer(button) {
   const taskElement = button.parentElement.parentElement;
   const taskId = parseInt(taskElement.dataset.id);
-
   const task = tasks.find((task) => task.id === taskId);
+
   clearInterval(task.intervalId);
-  document.querySelector(".task-timer").innerHTML = "00:00:00";
+  task.intervalId = null;
+
+  const timerDisplay = taskElement.querySelector(".task-timer");
+  timerDisplay.innerHTML = "00:00:00";
+
   task.isRunning = false;
   task.elapsedTime = 0;
   saveToLocalStorage();
