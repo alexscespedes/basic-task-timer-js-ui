@@ -43,6 +43,7 @@ function renderTask(task) {
 
   taskItem.classList.add("task-item");
   taskItem.dataset.id = task.id;
+  taskItem.dataset.createdAt = task.createdAt;
 
   taskItem.innerHTML = `
   <div class="task-header">
@@ -59,6 +60,7 @@ function renderTask(task) {
   `;
 
   taskList.appendChild(taskItem);
+  sortTaskByCreationTime();
 }
 
 function startTimer(button) {
@@ -162,6 +164,14 @@ function updateEmptyState() {
 function clearInputs() {
   taskName.value = "";
   taskDescription.value = "";
+}
+
+function sortTaskByCreationTime() {
+  return [...taskList.children]
+    .sort(
+      (a, b) => new Date(b.dataset.createdAt) - new Date(a.dataset.createdAt)
+    )
+    .forEach((task) => taskList.appendChild(task));
 }
 
 function saveToLocalStorage() {
