@@ -75,7 +75,7 @@ function startTimer(button) {
 
   const timerDisplay = taskElement.querySelector(".task-timer");
 
-  if (!task.isRunning) {
+  if (!task.isRunning && !task.intervalId) {
     task.isRunning = true;
     let elapsedSeconds = task.elapsedTime;
 
