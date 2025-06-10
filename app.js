@@ -42,6 +42,7 @@ function renderTask(task) {
   updateEmptyState();
 
   taskItem.classList.add("task-item");
+
   taskItem.dataset.id = task.id;
   taskItem.dataset.createdAt = task.createdAt;
 
@@ -58,6 +59,9 @@ function renderTask(task) {
   </div>
   <button onclick="deleteTask(this)" class="delete-btn">Delete</button>
   `;
+
+  const timerDisplay = taskItem.querySelector(".task-timer");
+  timerDisplay.innerHTML = formatTime(task.elapsedTime);
 
   taskList.appendChild(taskItem);
   sortTaskByCreationTime();
@@ -185,4 +189,14 @@ function loadFromLocalStorage() {
     tasks.forEach((task) => renderTask(task));
     updateEmptyState();
   }
+}
+
+function formatTime(seconds) {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+  return `${String(hours).padStart(2, "0")} : ${String(minutes).padStart(
+    2,
+    "0"
+  )} : ${String(secs).padStart(2, "0")}`;
 }
