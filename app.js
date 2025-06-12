@@ -141,6 +141,10 @@ function deleteTask(button) {
   const index = tasks.findIndex((task) => task.id === taskId);
 
   if (index !== -1) {
+    const task = tasks[index];
+    if (task.intervalId) {
+      clearInterval(task.intervalId);
+    }
     tasks.splice(index, 1);
   }
 
