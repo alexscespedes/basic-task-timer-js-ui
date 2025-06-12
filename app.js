@@ -110,6 +110,7 @@ function pauseTimer(button) {
   if (task.isRunning) {
     clearInterval(task.intervalId);
     task.isRunning = false;
+    task.intervalId = null;
     saveToLocalStorage();
   } else {
     alert("The task timer is already paused");

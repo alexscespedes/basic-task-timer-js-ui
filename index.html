@@ -13,15 +13,20 @@
       <div class="form-container">
         <div class="form-row">
           <label for="taskName">Task Name:</label>
-          <input type="text" id="taskName" placeholder="Enter task name..." />
+          <input
+            type="text"
+            id="taskName"
+            placeholder="Enter task name..."
+            maxlength="50"
+          />
         </div>
         <div class="form-row">
           <label for="taskDescription">Task Description:</label>
-          <input
-            type="text"
+          <textarea
             id="taskDescription"
             placeholder="Enter task description..."
-          />
+            maxlength="150"
+          ></textarea>
         </div>
         <button id="addTaskBtn" onclick="addTask()">Add Task</button>
       </div>
