@@ -1,4 +1,4 @@
-// Get Dom Elements
+// === DOM ELEMENTS ===
 
 const taskName = document.getElementById("taskName");
 const taskDescription = document.getElementById("taskDescription");
@@ -6,9 +6,17 @@ const taskList = document.getElementById("taskList");
 
 let tasks = [];
 
-window.addEventListener("DOMContentLoaded", loadFromLocalStorage);
+window.addEventListener("DOMContentLoaded", () => {
+  loadFromLocalStorage();
+  renderAllTasks();
+});
 
-function addTask() {
+// === EVENT LISTENERS ===
+document.getElementById("addTaskBtn").addEventListener("click", handleAddTask);
+
+// === TASK FUNCTIONS ===
+
+function handleAddTask() {
   const name = taskName.value.trim();
   const description = taskDescription.value.trim();
 
@@ -19,168 +27,132 @@ function addTask() {
 
   const task = {
     id: Date.now(),
-    name: name,
-    description: description,
+    name,
+    description,
     elapsedTime: 0,
     isRunning: false,
     intervalId: null,
     createdAt: new Date().toISOString(),
   };
 
-  tasks.push(task);
-  renderTask(task);
+  tasks.unshift(task);
   saveToLocalStorage();
-  // Render Task
-
-  // Count...
+  renderAllTasks();
   clearInputs();
 }
 
-function renderTask(task) {
-  const taskItem = document.createElement("li");
-
-  updateEmptyState();
-
-  taskItem.classList.add("task-item");
-
-  taskItem.dataset.id = task.id;
-  taskItem.dataset.createdAt = task.createdAt;
-
-  taskItem.innerHTML = `
-  <div class="task-header">
-    <span class="task-title">${task.name}</span>
-  </div>
-  <span class="task-description">${task.description}</span>
-  <p class="task-timer">00:00:00</p>
-  <div class="task-controls">
-    <button onclick="startTimer(this)" class="start-btn">Start</button>
-    <button onclick="pauseTimer(this)" class="pause-btn">Pause</button>
-    <button onclick="resetTimer(this)" class="reset-btn">Reset</button>
-  </div>
-  <button onclick="deleteTask(this)" class="delete-btn">Delete</button>
-  `;
-
-  const timerDisplay = taskItem.querySelector(".task-timer");
-  timerDisplay.innerHTML = formatTime(task.elapsedTime);
-
-  taskList.appendChild(taskItem);
-  sortTaskByCreationTime();
-}
-
-function startTimer(button) {
-  const taskElement = button.parentElement.parentElement;
-  const taskId = parseInt(taskElement.dataset.id);
-
-  const task = tasks.find((task) => task.id === taskId);
-
-  const timerDisplay = taskElement.querySelector(".task-timer");
-
-  if (!task.isRunning && !task.intervalId) {
-    task.isRunning = true;
-    let elapsedSeconds = task.elapsedTime;
-
-    const intervalId = setInterval(function () {
-      elapsedSeconds++;
-      task.elapsedTime = elapsedSeconds;
-
-      const hours = Math.floor(elapsedSeconds / 3600);
-      remainingAfterHours = elapsedSeconds % 3600; // Making a copy for not modifying elapsedSeconds.
-      const minutes = Math.floor(remainingAfterHours / 60);
-      const seconds = remainingAfterHours % 60;
-
-      const formattedTime = `${String(hours).padStart(2, "0")} : ${String(
-        minutes
-      ).padStart(2, "0")} : ${String(seconds).padStart(2, "0")}`;
-
-      timerDisplay.innerHTML = formattedTime;
-    }, 1000);
-
-    task.intervalId = intervalId;
-    saveToLocalStorage();
-  } else {
-    alert("The task timer is already running");
+function renderAllTasks() {
+  taskList.innerHTML = "";
+  if (tasks.length === 0) {
+    const empty = document.createElement("li");
+    empty.className = "empty-list";
+    empty.textContent = "No tasks added yet";
+    taskList.appendChild(empty);
+    return;
   }
+
+  tasks.forEach((task) => {
+    const taskItem = document.createElement("li");
+    taskItem.className = "task-item";
+    taskItem.dataset.id = task.id;
+
+    taskItem.innerHTML = `
+    <div class="task-header">
+      <span class="task-title">${task.name}</span>
+    </div>
+    <span class="task-description">${task.description}</span>
+    <p class="task-timer">${formatTime(task.elapsedTime)}</p>
+    <div class="task-controls">
+      <button class="start-btn">Start</button>
+      <button class="pause-btn">Pause</button>
+      <button class="reset-btn">Reset</button>
+    </div>
+    <button class="delete-btn">Delete</button>
+    `;
+
+    // Attach event listeners
+    taskItem
+      .querySelector(".start-btn")
+      .addEventListener("click", () => startTimer(task.id, taskItem));
+    taskItem
+      .querySelector(".pause-btn")
+      .addEventListener("click", () => pauseTimer(task.id));
+    taskItem
+      .querySelector(".reset-btn")
+      .addEventListener("click", () => resetTimer(task.id, taskItem));
+    taskItem
+      .querySelector(".delete-btn")
+      .addEventListener("click", () => deleteTask(task.id));
+
+    taskList.appendChild(taskItem);
+  });
 }
 
-function pauseTimer(button) {
-  const taskElement = button.parentElement.parentElement;
-  const taskId = parseInt(taskElement.dataset.id);
-
-  const task = tasks.find((task) => task.id === taskId);
-  if (task.isRunning) {
-    clearInterval(task.intervalId);
-    task.isRunning = false;
-    task.intervalId = null;
-    saveToLocalStorage();
-  } else {
-    alert("The task timer is already paused");
+function startTimer(id, element) {
+  const task = tasks.find((task) => task.id === id);
+  if (!task || task.isRunning) {
+    alert("Timer already running");
+    return;
   }
+
+  task.isRunning = true;
+  task.intervalId = setInterval(() => {
+    task.elapsedTime++;
+    const timerDisplay = element.querySelector(".task-timer");
+    timerDisplay.textContent = formatTime(task.elapsedTime);
+    saveToLocalStorage();
+  }, 1000);
 }
 
-function resetTimer(button) {
-  const taskElement = button.parentElement.parentElement;
-  const taskId = parseInt(taskElement.dataset.id);
-  const task = tasks.find((task) => task.id === taskId);
+function pauseTimer(id) {
+  const task = tasks.find((task) => task.id === id);
+  if (!task || !task.isRunning) {
+    alert("Timer is not running.");
+    return;
+  }
 
   clearInterval(task.intervalId);
   task.intervalId = null;
-
-  const timerDisplay = taskElement.querySelector(".task-timer");
-  timerDisplay.innerHTML = "00:00:00";
-
   task.isRunning = false;
+  saveToLocalStorage();
+}
+
+function resetTimer(id, element) {
+  const task = tasks.find((task) => task.id === id);
+  if (!task) return;
+
+  clearInterval(task.intervalId);
   task.elapsedTime = 0;
+  task.isRunning = false;
+  task.intervalId = null;
+
+  element.querySelector(".task-timer").textContent = formatTime(0);
   saveToLocalStorage();
 }
 
-function deleteTask(button) {
-  // ul --> li --> button
-  const taskElement = button.parentElement;
-  const taskId = parseInt(taskElement.dataset.id);
-
-  // Remove from tasks array
-  const index = tasks.findIndex((task) => task.id === taskId);
-
-  if (index !== -1) {
-    const task = tasks[index];
-    if (task.intervalId) {
-      clearInterval(task.intervalId);
-    }
-    tasks.splice(index, 1);
+function deleteTask(id) {
+  const task = tasks.find((task) => task.id === id);
+  if (task && task.intervalId) {
+    clearInterval(task.intervalId);
   }
 
-  taskElement.remove();
-  updateEmptyState();
+  tasks = tasks.filter((task) => task.id !== id);
   saveToLocalStorage();
+  renderAllTasks();
 }
 
-function updateEmptyState() {
-  const existingEmpty = document.querySelector(".empty-list");
-  if (tasks.length === 0) {
-    if (!existingEmpty) {
-      const emptyMessage = document.createElement("li");
-      emptyMessage.className = "empty-list";
-      emptyMessage.textContent = "No tasks added yet";
-      taskList.appendChild(emptyMessage);
-    }
-  } else {
-    if (existingEmpty) {
-      document.querySelector(".empty-list").remove();
-    }
-  }
-}
+// === UTILITIES ===
 
 function clearInputs() {
   taskName.value = "";
   taskDescription.value = "";
 }
 
-function sortTaskByCreationTime() {
-  return [...taskList.children]
-    .sort(
-      (a, b) => new Date(b.dataset.createdAt) - new Date(a.dataset.createdAt)
-    )
-    .forEach((task) => taskList.appendChild(task));
+function formatTime(seconds) {
+  const hours = String(Math.floor(seconds / 3600)).padStart(2, "0");
+  const minutes = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
+  const secs = String(seconds % 60).padStart(2, "0");
+  return `${hours}:${minutes}:${secs}`;
 }
 
 function saveToLocalStorage() {
@@ -188,20 +160,6 @@ function saveToLocalStorage() {
 }
 
 function loadFromLocalStorage() {
-  const storedTasks = localStorage.getItem("tasks");
-  if (storedTasks) {
-    tasks = JSON.parse(storedTasks);
-    tasks.forEach((task) => renderTask(task));
-    updateEmptyState();
-  }
-}
-
-function formatTime(seconds) {
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
-  return `${String(hours).padStart(2, "0")} : ${String(minutes).padStart(
-    2,
-    "0"
-  )} : ${String(secs).padStart(2, "0")}`;
+  const stored = localStorage.getItem("tasks");
+  tasks = stored ? JSON.parse(stored) : [];
 }
